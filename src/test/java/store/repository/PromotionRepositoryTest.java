@@ -10,7 +10,7 @@ import store.domain.Promotion;
 class PromotionRepositoryTest {
 
     @Test
-    void saveAllAndFindAllShouldWorkCorrectly() {
+    void 프로모션을_정상적으로_저장한다() {
         // given
         PromotionRepository repository = new PromotionRepository();
         Promotion promo1 = new Promotion("탄산2+1", 2, 1,
