@@ -4,9 +4,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.IOException;
 import java.nio.file.Paths;
-import java.util.Map;
+import java.util.List;
 import org.junit.jupiter.api.Test;
-import store.domain.Inventory;
+import store.dto.InventoryDto;
 
 class ProductParserTest {
 
@@ -16,14 +16,15 @@ class ProductParserTest {
         String filePath = Paths.get("src", "main", "resources", "products.md").toString();
 
         // when
-        Map<Inventory, String> inventoryPromotionMap = ProductParser.parseProducts(filePath);
+        List<InventoryDto> dtos = ProductParser.parseProducts(filePath);
 
         // then
-        assertThat(inventoryPromotionMap).hasSize(11);
+        assertThat(dtos).hasSize(16);
 
-        Inventory colaInventory = inventoryPromotionMap.keySet().stream()
-                .filter(inv -> inv.getProductName().equals("콜라")).findFirst().orElse(null);
-        assertThat(colaInventory).isNotNull();
-        assertThat(inventoryPromotionMap.get(colaInventory)).isEqualTo("탄산2+1");
+        InventoryDto colaInventory = dtos.stream()
+                .filter(inv -> inv.productName().equals("콜라"))
+                .findFirst()
+                .orElse(null);
+        assertThat(colaInventory.promotionName()).isEqualTo("탄산2+1");
     }
 }

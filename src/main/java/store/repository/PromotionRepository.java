@@ -2,6 +2,7 @@ package store.repository;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import store.domain.Promotion;
 
 public class PromotionRepository {
@@ -16,10 +17,9 @@ public class PromotionRepository {
         return new ArrayList<>(promotions);
     }
 
-    public Promotion findByName(String promotionName) {
+    public Optional<Promotion> findByName(String promotionName) {
         return promotions.stream()
                 .filter(promotion -> promotion.getName().equals(promotionName))
-                .findFirst()
-                .orElse(null);
+                .findFirst();
     }
 }

@@ -21,4 +21,8 @@ public class Inventory {
     public void addGeneralStock(int quantity) {
         stock.addGeneralStock(quantity);
     }
+
+    public void addPromotionStock(int quantity) {
+        stock.addPromotionStock(quantity);
+    }
 }

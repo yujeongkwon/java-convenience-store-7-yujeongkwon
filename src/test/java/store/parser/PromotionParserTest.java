@@ -1,7 +1,6 @@
 package store.parser;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.IOException;
 import java.nio.file.Paths;
@@ -10,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import store.domain.Promotion;
 
 class PromotionParserTest {
+
     @Test
     void 행사_목록을_파일_입출력을_통해_불러온다() throws IOException {
         // given

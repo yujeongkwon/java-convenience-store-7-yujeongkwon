@@ -3,11 +3,9 @@ package store.parser;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.HashMap;
-import java.util.Map;
-import store.domain.Inventory;
-import store.domain.Product;
-import store.domain.Stock;
+import java.util.ArrayList;
+import java.util.List;
+import store.dto.InventoryDto;
 
 public class ProductParser {
 
@@ -15,26 +13,23 @@ public class ProductParser {
     private static final int HEADER_LINE = 1;
     private static final String DELIMITER = ",";
 
-    private static Map<Inventory, String> inventoryPromotionMap;
-
-    public static Map<Inventory, String> parseProducts(String filePath) throws IOException {
-        inventoryPromotionMap = new HashMap<>();
-
+    public static List<InventoryDto> parseProducts(String filePath) throws IOException {
+        List<InventoryDto> inventoryDtos = new ArrayList<>();
         Files.lines(Paths.get(filePath))
                 .skip(HEADER_LINE)
                 .filter(line -> !line.isBlank())
-                .forEach(ProductParser::parse);
-        return inventoryPromotionMap;
+                .forEach(line -> inventoryDtos.add(parseToDto(line)));
+        return inventoryDtos;
     }
 
-    private static void parse(String line) {
+    private static InventoryDto parseToDto(String line) {
         String[] data = line.split(DELIMITER);
         String name = data[0].trim();
         int price = Integer.parseInt(data[1].trim());
         int quantity = Integer.parseInt(data[2].trim());
         String promotionName = getPromotionName(data[3].trim());
 
-        addOrUpdateInventory(name, quantity, promotionName, price);
+        return new InventoryDto(name, price, quantity, promotionName);
     }
 
     private static String getPromotionName(String promotion) {
@@ -42,31 +37,5 @@ public class ProductParser {
             return null;
         }
         return promotion;
-    }
-
-    private static void addOrUpdateInventory(String name, int quantity, String promotionName, int price) {
-        Inventory existingInventory = findInventoryByName(name);
-        if (existingInventory != null) {
-            existingInventory.addGeneralStock(quantity);
-            return;
-        }
-
-        Product product = new Product(name, price, null);
-        Stock stock = createStock(quantity, promotionName);
-        inventoryPromotionMap.put(new Inventory(product, stock), promotionName);
-    }
-
-    private static Inventory findInventoryByName(String name) {
-        return inventoryPromotionMap.keySet()
-                .stream()
-                .filter(inventory -> inventory.getProductName().equals(name))
-                .findFirst().orElse(null);
-    }
-
-    private static Stock createStock(int quantity, String promotionName) {
-        if (promotionName == null) {
-            return new Stock(quantity, 0);
-        }
-        return new Stock(0, quantity);
     }
 }

@@ -3,7 +3,7 @@ package store.domain;
 public class Stock {
 
     private int generalStock;
-    private final int promotionStock;
+    private int promotionStock;
 
     public Stock(int generalStock, int promotionStock) {
         this.generalStock = generalStock;
@@ -12,5 +12,9 @@ public class Stock {
 
     public void addGeneralStock(int quantity) {
         this.generalStock += quantity;
+    }
+
+    public void addPromotionStock(int quantity) {
+        this.promotionStock += quantity;
     }
 }

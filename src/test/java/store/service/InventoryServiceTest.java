@@ -1,58 +1,39 @@
 package store.service;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.IOException;
 import java.nio.file.Paths;
-import java.time.LocalDate;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import store.domain.Inventory;
 import store.domain.Promotion;
 import store.repository.InventoryRepository;
 import store.repository.PromotionRepository;
 
 class InventoryServiceTest {
 
-    InventoryService service;
-    InventoryRepository inventoryRepository;
+    private InventoryRepository inventoryRepository;
+    private PromotionRepository promotionRepository;
+    private InventoryService inventoryService;
 
     @BeforeEach
     void setUp() {
         inventoryRepository = new InventoryRepository();
-        PromotionRepository promotionRepository = new PromotionRepository();
+        promotionRepository = new PromotionRepository();
+        inventoryService = new InventoryService(inventoryRepository, promotionRepository);
 
-        Promotion promo1 = new Promotion("탄산2+1", 2, 1,
-                LocalDate.of(2024, 1, 1),
-                LocalDate.of(2024, 12, 31));
-        Promotion promo2 = new Promotion("MD추천상품", 1, 1,
-                LocalDate.of(2024, 1, 1),
-                LocalDate.of(2024, 12, 31));
-        promotionRepository.saveAll(List.of(promo1, promo2));
-
-        service = new InventoryService(inventoryRepository, promotionRepository);
+        promotionRepository.saveAll(
+                List.of(new Promotion("탄산2+1", 2, 1, null, null), new Promotion("MD추천상품", 1, 1, null, null),
+                        new Promotion("반짝할인", 1, 1, null, null)));
     }
 
     @Test
-    void 인벤토리를_불러오고_정상적으로_프로모션과_연동된다() throws IOException {
-        // given
+    void productsMd_파일로부터_데이터를_불러와_저장한다() throws IOException {
         String filePath = Paths.get("src", "main", "resources", "products.md").toString();
 
-        // when
-        service.loadInventory(filePath);
+        inventoryService.loadInventory(filePath);
 
-        // then
-        List<Inventory> inventories = inventoryRepository.findAll();
-        assertEquals(11, inventories.size());
-
-        Inventory colaInventory = inventories.stream()
-                .filter(inv -> inv.getProductName().equals("콜라"))
-                .findFirst()
-                .orElse(null);
-
-        assertNotNull(colaInventory);
-        assertEquals("콜라", colaInventory.getProductName());
+        assertThat(inventoryRepository.findAll()).hasSize(11);
     }
 }
