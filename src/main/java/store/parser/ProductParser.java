@@ -1,5 +1,6 @@
 package store.parser;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -15,10 +16,13 @@ public class ProductParser {
 
     public static List<InventoryDto> parseProducts(String filePath) throws IOException {
         List<InventoryDto> inventoryDtos = new ArrayList<>();
-        Files.lines(Paths.get(filePath))
-                .skip(HEADER_LINE)
-                .filter(line -> !line.isBlank())
-                .forEach(line -> inventoryDtos.add(parseToDto(line)));
+
+        try (BufferedReader reader = Files.newBufferedReader(Paths.get(filePath))) {
+            reader.lines()
+                    .skip(HEADER_LINE)
+                    .filter(line -> !line.isBlank())
+                    .forEach(line -> inventoryDtos.add(parseToDto(line)));
+        }
         return inventoryDtos;
     }
 

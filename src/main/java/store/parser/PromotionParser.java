@@ -1,24 +1,29 @@
 package store.parser;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 import store.domain.Promotion;
 
 public class PromotionParser {
 
     private static final int HEADER_LINE = 1;
-    public static final String DELIMITER = ",";
+    private static final String DELIMITER = ",";
 
     public static List<Promotion> parsePromotions(String filePath) throws IOException {
-        return Files.lines(Paths.get(filePath))
-                .skip(HEADER_LINE)
-                .filter(line -> !line.isBlank())
-                .map(PromotionParser::parsePromotion)
-                .collect(Collectors.toList());
+        List<Promotion> promotions = new ArrayList<>();
+
+        try (BufferedReader reader = Files.newBufferedReader(Paths.get(filePath))) {
+            reader.lines()
+                    .skip(HEADER_LINE)
+                    .filter(line -> !line.isBlank())
+                    .forEach(line -> promotions.add(parsePromotion(line)));
+        }
+        return promotions;
     }
 
     private static Promotion parsePromotion(String line) {
