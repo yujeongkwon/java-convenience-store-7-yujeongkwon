@@ -1,4 +1,4 @@
-package store.domain;
+package store.inventory.domain;
 
 public class Stock {
 
@@ -24,5 +24,9 @@ public class Stock {
 
     public int getPromotionStock() {
         return promotionStock;
+    }
+
+    public int getTotalStock() {
+        return generalStock + promotionStock;
     }
 }

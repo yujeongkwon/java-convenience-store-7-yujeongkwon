@@ -1,4 +1,4 @@
-package store.parser;
+package store.inventory.parser;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -7,7 +7,7 @@ import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import store.domain.Promotion;
+import store.inventory.domain.Promotion;
 
 public class PromotionParser {
 

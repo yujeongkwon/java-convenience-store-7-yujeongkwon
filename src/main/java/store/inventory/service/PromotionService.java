@@ -1,10 +1,10 @@
-package store.service;
+package store.inventory.service;
 
 import java.io.IOException;
 import java.util.List;
-import store.domain.Promotion;
-import store.parser.PromotionParser;
-import store.repository.PromotionRepository;
+import store.inventory.domain.Promotion;
+import store.inventory.parser.PromotionParser;
+import store.inventory.repository.PromotionRepository;
 
 public class PromotionService {
 

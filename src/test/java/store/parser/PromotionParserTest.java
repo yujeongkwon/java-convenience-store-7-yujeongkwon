@@ -6,7 +6,8 @@ import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.List;
 import org.junit.jupiter.api.Test;
-import store.domain.Promotion;
+import store.inventory.domain.Promotion;
+import store.inventory.parser.PromotionParser;
 
 class PromotionParserTest {
 

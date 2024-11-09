@@ -1,8 +1,8 @@
 package store.view;
 
 import java.util.List;
-import store.dto.InventoryDto;
-import store.dto.InventoryPairDto;
+import store.inventory.dto.InventoryDto;
+import store.inventory.dto.InventoryPairDto;
 
 public class OutputView {
 

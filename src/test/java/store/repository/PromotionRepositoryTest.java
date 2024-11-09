@@ -5,7 +5,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.time.LocalDate;
 import java.util.List;
 import org.junit.jupiter.api.Test;
-import store.domain.Promotion;
+import store.inventory.domain.Promotion;
+import store.inventory.repository.PromotionRepository;
 
 class PromotionRepositoryTest {
 

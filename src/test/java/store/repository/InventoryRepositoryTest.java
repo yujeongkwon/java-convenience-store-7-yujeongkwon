@@ -3,9 +3,10 @@ package store.repository;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.Test;
-import store.domain.Inventory;
-import store.domain.Product;
-import store.domain.Stock;
+import store.inventory.domain.InventoryItem;
+import store.inventory.domain.Product;
+import store.inventory.domain.Stock;
+import store.inventory.repository.InventoryRepository;
 
 class InventoryRepositoryTest {
 
@@ -15,13 +16,13 @@ class InventoryRepositoryTest {
         InventoryRepository repository = new InventoryRepository();
         Product product = new Product("콜라", 1000, null);
         Stock stock = new Stock(10, 0);
-        Inventory inventory = new Inventory(product, stock);
+        InventoryItem inventoryItem = new InventoryItem(product, stock);
 
         // when
-        repository.save(inventory);
+        repository.save(inventoryItem);
 
         // then
-        assertThat(repository.findAll()).hasSize(1).containsExactly(inventory);
+        assertThat(repository.findAll()).hasSize(1).containsExactly(inventoryItem);
     }
 
     @Test
@@ -30,11 +31,11 @@ class InventoryRepositoryTest {
         InventoryRepository repository = new InventoryRepository();
         Product product = new Product("사이다", 1000, null);
         Stock stock = new Stock(10, 0);
-        Inventory inventory = new Inventory(product, stock);
-        repository.save(inventory);
+        InventoryItem inventoryItem = new InventoryItem(product, stock);
+        repository.save(inventoryItem);
 
         // when
-        Inventory result = repository.findByProductName("사이다").orElse(null);
+        InventoryItem result = repository.findByProductName("사이다").orElse(null);
 
         // then
         assertThat(result).isNotNull();

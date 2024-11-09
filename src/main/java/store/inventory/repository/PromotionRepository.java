@@ -1,9 +1,9 @@
-package store.repository;
+package store.inventory.repository;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import store.domain.Promotion;
+import store.inventory.domain.Promotion;
 
 public class PromotionRepository {
 

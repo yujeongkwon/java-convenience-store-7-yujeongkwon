@@ -2,10 +2,10 @@ package store;
 
 import store.controller.StoreController;
 import store.exception.ExceptionHandler;
-import store.repository.InventoryRepository;
-import store.repository.PromotionRepository;
-import store.service.InventoryService;
-import store.service.PromotionService;
+import store.inventory.repository.InventoryRepository;
+import store.inventory.repository.PromotionRepository;
+import store.inventory.service.InventoryService;
+import store.inventory.service.PromotionService;
 
 public class Configuration {
 

@@ -7,9 +7,10 @@ import java.nio.file.Paths;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import store.domain.Promotion;
-import store.repository.InventoryRepository;
-import store.repository.PromotionRepository;
+import store.inventory.domain.Promotion;
+import store.inventory.repository.InventoryRepository;
+import store.inventory.repository.PromotionRepository;
+import store.inventory.service.InventoryService;
 
 class InventoryServiceTest {
 

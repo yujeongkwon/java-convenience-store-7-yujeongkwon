@@ -1,13 +1,17 @@
-package store.domain;
+package store.inventory.domain;
 
-public class Inventory {
+public class InventoryItem {
 
     private final Product product;
     private final Stock stock;
 
-    public Inventory(Product product, Stock stock) {
+    public InventoryItem(Product product, Stock stock) {
         this.product = product;
         this.stock = stock;
+    }
+
+    public boolean hasSufficientStock(int quantity) {
+        return stock.getTotalStock() >= quantity;
     }
 
     public String getProductName() {
@@ -22,6 +26,14 @@ public class Inventory {
         return product.getPrice();
     }
 
+    public int getGeneralStock() {
+        return stock.getGeneralStock();
+    }
+
+    public int getPromotionStock() {
+        return stock.getPromotionStock();
+    }
+
     public void changePromotion(Promotion promotion) {
         product.changePromotion(promotion);
     }
@@ -32,13 +44,5 @@ public class Inventory {
 
     public void addPromotionStock(int quantity) {
         stock.addPromotionStock(quantity);
-    }
-
-    public int getGeneralStock() {
-        return stock.getGeneralStock();
-    }
-
-    public int getPromotionStock() {
-        return stock.getPromotionStock();
     }
 }

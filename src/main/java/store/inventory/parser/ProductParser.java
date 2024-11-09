@@ -1,4 +1,4 @@
-package store.parser;
+package store.inventory.parser;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -6,7 +6,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
-import store.dto.InventoryDto;
+import store.inventory.dto.InventoryDto;
 
 public class ProductParser {
 

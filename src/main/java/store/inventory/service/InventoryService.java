@@ -1,15 +1,15 @@
-package store.service;
+package store.inventory.service;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
-import store.domain.Inventory;
-import store.domain.Promotion;
-import store.dto.InventoryDto;
-import store.dto.InventoryPairDto;
-import store.parser.ProductParser;
-import store.repository.InventoryRepository;
-import store.repository.PromotionRepository;
+import store.inventory.domain.InventoryItem;
+import store.inventory.domain.Promotion;
+import store.inventory.dto.InventoryDto;
+import store.inventory.dto.InventoryPairDto;
+import store.inventory.parser.ProductParser;
+import store.inventory.repository.InventoryRepository;
+import store.inventory.repository.PromotionRepository;
 
 public class InventoryService {
 
@@ -31,28 +31,28 @@ public class InventoryService {
     }
 
     private void processInventoryDto(InventoryDto dto) {
-        Inventory existingInventory = inventoryRepository.findByProductName(dto.productName()).orElse(null);
-        if (existingInventory != null) {
-            updateExistingInventory(existingInventory, dto);
+        InventoryItem existingInventoryItem = inventoryRepository.findByProductName(dto.productName()).orElse(null);
+        if (existingInventoryItem != null) {
+            updateExistingInventory(existingInventoryItem, dto);
             return;
         }
         createAndSaveNewInventory(dto);
     }
 
-    private void updateExistingInventory(Inventory inventory, InventoryDto dto) {
+    private void updateExistingInventory(InventoryItem inventoryItem, InventoryDto dto) {
         if (dto.promotionName() == null) {
-            inventory.addGeneralStock(dto.stock());
+            inventoryItem.addGeneralStock(dto.stock());
             return;
         }
 
-        inventory.addPromotionStock(dto.stock());
-        inventory.changePromotion(findPromotion(dto.promotionName()));
+        inventoryItem.addPromotionStock(dto.stock());
+        inventoryItem.changePromotion(findPromotion(dto.promotionName()));
     }
 
     private void createAndSaveNewInventory(InventoryDto dto) {
         Promotion promotion = findPromotion(dto.promotionName());
-        Inventory newInventory = new Inventory(dto.toProduct(promotion), dto.toStock());
-        inventoryRepository.save(newInventory);
+        InventoryItem newInventoryItem = new InventoryItem(dto.toProduct(promotion), dto.toStock());
+        inventoryRepository.save(newInventoryItem);
     }
 
     private Promotion findPromotion(String promotionName) {

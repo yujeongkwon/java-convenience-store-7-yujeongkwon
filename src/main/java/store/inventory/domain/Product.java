@@ -1,4 +1,4 @@
-package store.domain;
+package store.inventory.domain;
 
 import java.util.Optional;
 

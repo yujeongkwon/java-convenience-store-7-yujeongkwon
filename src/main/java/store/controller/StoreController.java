@@ -3,10 +3,10 @@ package store.controller;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.List;
-import store.dto.InventoryPairDto;
+import store.inventory.dto.InventoryPairDto;
 import store.exception.ExceptionHandler;
-import store.service.InventoryService;
-import store.service.PromotionService;
+import store.inventory.service.InventoryService;
+import store.inventory.service.PromotionService;
 import store.view.OutputView;
 
 public class StoreController {

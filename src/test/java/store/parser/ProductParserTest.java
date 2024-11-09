@@ -6,7 +6,8 @@ import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.List;
 import org.junit.jupiter.api.Test;
-import store.dto.InventoryDto;
+import store.inventory.dto.InventoryDto;
+import store.inventory.parser.ProductParser;
 
 class ProductParserTest {
 
