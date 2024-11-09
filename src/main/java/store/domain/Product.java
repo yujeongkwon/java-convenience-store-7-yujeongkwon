@@ -18,6 +18,14 @@ public class Product {
         return name;
     }
 
+    public String getPromotionName() {
+        return promotion.map(Promotion::getName).orElse("");
+    }
+
+    public int getPrice() {
+        return price;
+    }
+
     protected void changePromotion(Promotion promotion) {
         this.promotion = Optional.ofNullable(promotion);
     }

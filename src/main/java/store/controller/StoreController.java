@@ -2,9 +2,12 @@ package store.controller;
 
 import java.io.IOException;
 import java.nio.file.Paths;
+import java.util.List;
+import store.dto.InventoryPairDto;
 import store.exception.ExceptionHandler;
 import store.service.InventoryService;
 import store.service.PromotionService;
+import store.view.OutputView;
 
 public class StoreController {
 
@@ -27,6 +30,8 @@ public class StoreController {
     }
 
     public void run() {
+        List<InventoryPairDto> inventoryPairDtos = inventoryService.getAllInventoryDtos();
+        OutputView.displayInventory(inventoryPairDtos);
     }
 
     private void loadInitialData() throws IOException {

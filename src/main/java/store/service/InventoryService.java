@@ -2,9 +2,11 @@ package store.service;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.stream.Collectors;
 import store.domain.Inventory;
 import store.domain.Promotion;
 import store.dto.InventoryDto;
+import store.dto.InventoryPairDto;
 import store.parser.ProductParser;
 import store.repository.InventoryRepository;
 import store.repository.PromotionRepository;
@@ -22,6 +24,10 @@ public class InventoryService {
     public void loadInventory(String filePath) throws IOException {
         List<InventoryDto> dtos = ProductParser.parseProducts(filePath);
         dtos.forEach(this::processInventoryDto);
+    }
+
+    public List<InventoryPairDto> getAllInventoryDtos() {
+        return inventoryRepository.findAll().stream().map(InventoryPairDto::fromInventory).collect(Collectors.toList());
     }
 
     private void processInventoryDto(InventoryDto dto) {

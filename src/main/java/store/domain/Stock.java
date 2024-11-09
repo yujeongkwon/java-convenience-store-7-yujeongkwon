@@ -17,4 +17,12 @@ public class Stock {
     public void addPromotionStock(int quantity) {
         this.promotionStock += quantity;
     }
+
+    public int getGeneralStock() {
+        return generalStock;
+    }
+
+    public int getPromotionStock() {
+        return promotionStock;
+    }
 }

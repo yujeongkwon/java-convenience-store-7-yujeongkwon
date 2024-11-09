@@ -14,6 +14,14 @@ public class Inventory {
         return product.getName();
     }
 
+    public String getPromotionName() {
+        return product.getPromotionName();
+    }
+
+    public int getPrice() {
+        return product.getPrice();
+    }
+
     public void changePromotion(Promotion promotion) {
         product.changePromotion(promotion);
     }
@@ -24,5 +32,13 @@ public class Inventory {
 
     public void addPromotionStock(int quantity) {
         stock.addPromotionStock(quantity);
+    }
+
+    public int getGeneralStock() {
+        return stock.getGeneralStock();
+    }
+
+    public int getPromotionStock() {
+        return stock.getPromotionStock();
     }
 }
