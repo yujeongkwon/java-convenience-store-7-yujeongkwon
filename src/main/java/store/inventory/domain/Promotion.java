@@ -21,6 +21,10 @@ public class Promotion {
         return name;
     }
 
+    public int calculateFreeQuantity(int quantity) {
+        return (quantity / (buyQuantity + freeQuantity)) * freeQuantity;
+    }
+
     public boolean isApplicable(int quantity, LocalDate today) {
         return isActive(today) && isEligibleForPromotion(quantity);
     }
