@@ -1,7 +1,16 @@
 package store.exception;
 
+import static store.exception.messages.UserPromotionMessage.PROMOTION_NOT_AVAILABLE;
+
 public class PromotionNotAvailableException extends RuntimeException {
-    public PromotionNotAvailableException(String message) {
-        super(message);
+    private final int nonPromotionQuantity;
+
+    public PromotionNotAvailableException(String productName, int nonPromotionQuantity) {
+        super(PROMOTION_NOT_AVAILABLE.format(productName, nonPromotionQuantity));
+        this.nonPromotionQuantity = nonPromotionQuantity;
+    }
+
+    public int getNonPromotionQuantity() {
+        return nonPromotionQuantity;
     }
 }

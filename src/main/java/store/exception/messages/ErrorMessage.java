@@ -1,4 +1,4 @@
-package store.exception;
+package store.exception.messages;
 
 public enum ErrorMessage {
 
@@ -9,10 +9,7 @@ public enum ErrorMessage {
     MAXIMUM_NUMBER_LENGTH("숫자는 9자 이내여야합니다."),
     DUPLICATE_ORDER_ITEM("중복된 상품이 있습니다. 다시 입력해 주세요."),
     INSUFFICIENT_STOCK("재고 수량을 초과하여 구매할 수 없습니다. 다시 입력해 주세요."),
-    NOT_FOUND("존재하지 않는 상품입니다. 다시 입력해 주세요."),
-    ADDITIONAL_BENEFIT_AVAILABLE("현재 %s은(는) %d개를 무료로 더 받을 수 있습니다."),
-    PROMOTION_NOT_AVAILABLE("현재 %s %d개는 프로모션 할인이 적용되지 않습니다.");
-
+    NOT_FOUND("존재하지 않는 상품입니다. 다시 입력해 주세요.");
     private final String message;
 
     ErrorMessage(String message) {

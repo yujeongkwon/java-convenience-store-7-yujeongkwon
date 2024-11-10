@@ -1,6 +1,6 @@
 package store.order.domain;
 
-import static store.exception.ErrorMessage.INSUFFICIENT_STOCK;
+import static store.exception.messages.ErrorMessage.INSUFFICIENT_STOCK;
 
 import java.time.LocalDate;
 import store.inventory.domain.InventoryItem;
@@ -10,33 +10,50 @@ public class CartItem {
 
     private final String product;
     private final InventoryItem inventoryItem;
-    private final int quantity;
-    private final int freeQuantity;
+    private int buyQuantity;
+    private int freeQuantity;
 
     public CartItem(String product, InventoryItem inventoryItem, int quantity, int freeQuantity) {
         this.product = product;
         this.inventoryItem = inventoryItem;
-        this.quantity = quantity;
+        this.buyQuantity = quantity;
         this.freeQuantity = freeQuantity;
     }
 
     public static CartItem from(OrderItemDto orderItemDto, InventoryItem inventoryItem, LocalDate today) {
         validateStock(orderItemDto, inventoryItem);
         int freeQuantity = inventoryItem.calculateFreeQuantity(orderItemDto.quantity(), today);
-        return new CartItem(orderItemDto.productName(), inventoryItem, orderItemDto.quantity(), freeQuantity);
+        int buyQuantity = orderItemDto.quantity() - freeQuantity;
+        return new CartItem(orderItemDto.productName(), inventoryItem, buyQuantity, freeQuantity);
     }
 
-    public void applyPromotions() {
-        if(freeQuantity != 0) {
-            inventoryItem.checkForPromotionStock(freeQuantity);
-            inventoryItem.checkForAdditionalBenefit(quantity, freeQuantity);
+    public void drainStock(LocalDate today) {
+        int totalQuantity = getTotalQuantity();
+        inventoryItem.drainStock(totalQuantity,today);
+    }
+
+    public void handlePromotionShortage(boolean userChoice, int nonPromotionQuantity) {
+        if (userChoice) {
+            inventoryItem.drainNonPromotionQuantity(nonPromotionQuantity);
+            return ;
         }
+
+        buyQuantity -= nonPromotionQuantity;
+    }
+
+    public void addEligibleFreeItems(int additionalEligibleQuantity) {
+        inventoryItem.addEligibleQuantity(additionalEligibleQuantity);
+        freeQuantity += additionalEligibleQuantity;
     }
 
     private static void validateStock(OrderItemDto orderItemDto, InventoryItem inventoryItem) {
         if (!inventoryItem.hasSufficientStock(orderItemDto.quantity())) {
             throw new IllegalArgumentException(INSUFFICIENT_STOCK.getMessage());
         }
+    }
+
+    private int getTotalQuantity() {
+        return buyQuantity + freeQuantity;
     }
 
     public String getProductName() {

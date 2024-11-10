@@ -2,7 +2,7 @@ package store.domain;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static store.exception.ErrorMessage.INSUFFICIENT_STOCK;
+import static store.exception.messages.ErrorMessage.INSUFFICIENT_STOCK;
 
 import java.time.LocalDate;
 import org.junit.jupiter.api.BeforeEach;

@@ -3,7 +3,6 @@ package store.inventory.domain;
 import java.time.LocalDate;
 import java.util.Optional;
 import store.exception.AdditionalBenefitException;
-import store.exception.ErrorMessage;
 import store.exception.PromotionNotAvailableException;
 
 public class InventoryItem {
@@ -25,59 +24,69 @@ public class InventoryItem {
     }
 
     public int calculateFreeQuantity(int quantity, LocalDate today) {
-        if (isApplicablePromotion(quantity, today)) {
+        if (isPromotionApplicable(quantity, today)) {
             return promotion.get().calculateFreeQuantity(quantity, stock.getPromotionStock());
         }
-
         return ZERO;
     }
 
     public void drainStock(int totalQuantity, LocalDate today) {
-        if (!isApplicablePromotion(totalQuantity, today)) {
+        if (!isPromotionApplicable(totalQuantity, today)) {
             stock.useGeneralStock(totalQuantity);
+            return;
         }
 
         checkForAdditionalBenefit(totalQuantity);
-        applyPromotions(totalQuantity);
+        applyPromotionDiscount(totalQuantity);
     }
 
     public void checkForAdditionalBenefit(int quantity) {
         int additionalEligibleQuantity = calculateRemainingFreeQuantity(quantity);
-        if (isAdditionalBenefit(additionalEligibleQuantity, quantity)) {
-            throw new AdditionalBenefitException(
-                    ErrorMessage.ADDITIONAL_BENEFIT_AVAILABLE.format(getProductName(), additionalEligibleQuantity));
+        if (isEligibleForAdditionalBenefit(additionalEligibleQuantity, quantity)) {
+            throw new AdditionalBenefitException(getProductName(), additionalEligibleQuantity);
         }
     }
 
-    public void applyPromotions(int quantity) {
-        int promotionQuantity = promotion.get().calculateAvailablePromotionStock(quantity, stock.getPromotionStock());
+    public void addEligibleQuantity(int quantity) {
+        stock.drainDuringPromotionPeriod(quantity);
+    }
+
+    public void applyPromotionDiscount(int quantity) {
+        int promotionQuantity = calculatePromotionStock(quantity);
         int nonPromotionQuantity = quantity - promotionQuantity;
 
-        if (nonPromotionQuantity > 0) {
-            throw new PromotionNotAvailableException(
-                    ErrorMessage.PROMOTION_NOT_AVAILABLE.format(getProductName(), nonPromotionQuantity));
-        }
         stock.drainDuringPromotionPeriod(promotionQuantity);
+        if (nonPromotionQuantity > ZERO) {
+            throw new PromotionNotAvailableException(getProductName(), nonPromotionQuantity);
+        }
     }
 
-    private boolean isApplicablePromotion(int quantity, LocalDate today) {
+    public void drainNonPromotionQuantity(int nonPromotionQuantity) {
+        stock.drainDuringPromotionPeriod(nonPromotionQuantity);
+    }
+
+    private boolean isPromotionApplicable(int quantity, LocalDate today) {
         return promotion.isPresent() && promotion.get().isApplicable(quantity, today);
     }
 
-    private int calculateRemainingFreeQuantity(int quantity) {
+    public int calculateRemainingFreeQuantity(int quantity) {
         return promotion.map(promo -> promo.calculateRemainingFreeQuantity(quantity)).orElse(ZERO);
     }
 
+    private boolean isEligibleForAdditionalBenefit(int additionalEligibleQuantity, int quantity) {
+        int availablePromotionStock = calculatePromotionStock(quantity);
+        int totalRequiredStock = calculateTotalRequiredStock(additionalEligibleQuantity, availablePromotionStock);
 
-    private boolean isAdditionalBenefit(int additionalEligibleQuantity, int quantity) {
-        int available = promotion.get().calculateAvailablePromotionStock(quantity, stock.getPromotionStock());
-        int PromotionSetSize = promotion.get().getPromotionSetSize();
-        int totalQuantity = available + additionalEligibleQuantity * PromotionSetSize;
+        return additionalEligibleQuantity > ZERO && stock.getPromotionStock() >= totalRequiredStock;
+    }
 
-        boolean hasAdditionalBenefit = additionalEligibleQuantity > ZERO;
-        boolean hasSufficientPromotionStock = stock.getPromotionStock() >= totalQuantity;
+    private int calculatePromotionStock(int quantity) {
+        return promotion.get().calculateAvailablePromotionStock(quantity, stock.getPromotionStock());
+    }
 
-        return hasAdditionalBenefit && hasSufficientPromotionStock;
+    private int calculateTotalRequiredStock(int additionalEligibleQuantity, int availablePromotionStock) {
+        int promotionSetSize = promotion.get().getPromotionSetSize();
+        return availablePromotionStock + additionalEligibleQuantity * promotionSetSize;
     }
 
     public String getProductName() {
