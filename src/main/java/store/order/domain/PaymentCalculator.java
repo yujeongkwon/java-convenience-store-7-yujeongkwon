@@ -1,5 +1,10 @@
 package store.order.domain;
 
+import java.util.List;
+import store.order.dto.FreeItemDto;
+import store.order.dto.ReceiptDto;
+import store.order.dto.ReceiptItemDto;
+
 public class PaymentCalculator {
 
     private static final int MEMBERSHIP_DISCOUNT_LIMIT = 8000;
@@ -11,6 +16,17 @@ public class PaymentCalculator {
     public PaymentCalculator(Cart cart, boolean membershipStatus) {
         this.cart = cart;
         this.membershipDiscountRate = initializeMembershipDiscountRate(membershipStatus);
+    }
+
+    public ReceiptDto generateReceipt() {
+        List<ReceiptItemDto> purchasedItems = cart.createPurchasedItems();
+        List<FreeItemDto> freeItems = cart.getFreeItems();
+        int totalAmount = cart.calculateTotalPrice();
+        int promotionDiscount = cart.calculatePromotionDiscount();
+        int membershipDiscount = calculateMembershipDiscount(totalAmount, promotionDiscount);
+        int finalAmount = calculateFinalAmount(totalAmount, promotionDiscount, membershipDiscount);
+
+        return new ReceiptDto(purchasedItems, freeItems, totalAmount, promotionDiscount, membershipDiscount, finalAmount);
     }
 
     private Double initializeMembershipDiscountRate(boolean membershipStatus) {

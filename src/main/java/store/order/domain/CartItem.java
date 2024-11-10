@@ -65,6 +65,10 @@ public class CartItem {
         return buyQuantity + freeQuantity;
     }
 
+    public FreeItemDto getFreeItems() {
+        return new FreeItemDto(product, freeQuantity);
+    }
+
     public String getProductName() {
         return product;
     }

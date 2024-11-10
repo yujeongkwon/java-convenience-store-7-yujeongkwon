@@ -60,6 +60,19 @@ public class Cart {
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException(NOT_FOUND.getMessage()));
     }
+
+    public List<ReceiptItemDto> createPurchasedItems() {
+        return items.stream()
+                .map(item -> new ReceiptItemDto(item.getProductName(), item.getTotalQuantity(), item.calculateTotalPrice()))
+                .toList();
+    }
+
+    public List<FreeItemDto> getFreeItems() {
+        return items.stream()
+                .map(CartItem::getFreeItems)
+                .collect(Collectors.toList());
+    }
+
     public List<CartItem> getItems() {
         return items;
     }
