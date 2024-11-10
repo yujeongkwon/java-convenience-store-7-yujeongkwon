@@ -7,7 +7,9 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 import store.inventory.domain.InventoryItem;
+import store.order.dto.FreeItemDto;
 import store.order.dto.OrderItemDto;
+import store.order.dto.ReceiptItemDto;
 
 public class Cart {
 
@@ -26,6 +28,18 @@ public class Cart {
                 })
                 .collect(Collectors.toList());
         return new Cart(cartItems);
+    }
+
+    public PaymentCalculator createPaymentCalculator(boolean membershipStatus) {
+        return new PaymentCalculator(this, membershipStatus);
+    }
+
+    public int calculateTotalPrice() {
+        return items.stream().mapToInt(CartItem::calculateTotalPrice).sum();
+    }
+
+    public int calculatePromotionDiscount() {
+        return items.stream().mapToInt(CartItem::calculatePromotionDiscount).sum();
     }
 
     private static void validateDuplicate(List<OrderItemDto> orderItems) {

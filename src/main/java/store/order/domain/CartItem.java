@@ -4,6 +4,7 @@ import static store.exception.messages.ErrorMessage.INSUFFICIENT_STOCK;
 
 import java.time.LocalDate;
 import store.inventory.domain.InventoryItem;
+import store.order.dto.FreeItemDto;
 import store.order.dto.OrderItemDto;
 
 public class CartItem {
@@ -52,7 +53,15 @@ public class CartItem {
         }
     }
 
-    private int getTotalQuantity() {
+    public int calculateTotalPrice() {
+        return buyQuantity * inventoryItem.getPrice();
+    }
+
+    public int calculatePromotionDiscount() {
+        return freeQuantity * inventoryItem.getPrice();
+    }
+
+    public int getTotalQuantity() {
         return buyQuantity + freeQuantity;
     }
 

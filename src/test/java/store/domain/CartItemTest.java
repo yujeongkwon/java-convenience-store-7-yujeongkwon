@@ -7,6 +7,7 @@ import static store.exception.messages.ErrorMessage.INSUFFICIENT_STOCK;
 import java.time.LocalDate;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import store.order.dto.FreeItemDto;
 import store.order.dto.OrderItemDto;
 import store.inventory.domain.InventoryItem;
 import store.inventory.domain.Product;
@@ -16,12 +17,14 @@ import store.order.domain.CartItem;
 class CartItemTest {
 
     private InventoryItem inventoryItem;
+    private CartItem cartItem;
 
     @BeforeEach
     void setUp() {
         Product cola = new Product("콜라", 1000);
         Stock colaStock = new Stock(10, 0);
         inventoryItem = new InventoryItem(cola, colaStock, null);
+        cartItem = new CartItem("콜라", inventoryItem, 5, 1);
     }
 
     @Test
@@ -45,5 +48,36 @@ class CartItemTest {
         assertThatThrownBy(() -> CartItem.from(orderItemDto, inventoryItem, LocalDate.now()))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage(INSUFFICIENT_STOCK.getMessage());
+    }
+
+    @Test
+    void 총_금액을_계산한다() {
+        // when
+        int totalAmount = cartItem.calculateTotalPrice();
+
+        // then
+        assertThat(totalAmount).isEqualTo(5000); // 5 * 1000
+    }
+
+    @Test
+    void 프로모션_할인액을_계산한다() {
+        // given
+        CartItem cartItemWithDiscount = new CartItem("콜라", inventoryItem, 5, 2);
+
+        // when
+        int promotionDiscount = cartItemWithDiscount.calculatePromotionDiscount();
+
+        // then
+        assertThat(promotionDiscount).isEqualTo(2000); // 2 * 1000
+    }
+
+    @Test
+    void 증정품목_객체를_반환한다() {
+        // when
+        FreeItemDto freeItem = cartItem.getFreeItems();
+
+        // then
+        assertThat(freeItem.productName()).isEqualTo("콜라");
+        assertThat(freeItem.quantity()).isEqualTo(1);
     }
 }
