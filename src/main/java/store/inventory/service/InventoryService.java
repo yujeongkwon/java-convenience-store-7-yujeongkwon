@@ -1,6 +1,6 @@
 package store.inventory.service;
 
-import static store.exception.ErrorMessage.NOT_FOUND;
+import static store.exception.messages.ErrorMessage.NOT_FOUND;
 
 import java.io.IOException;
 import java.util.List;

@@ -2,8 +2,8 @@ package store.domain;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static store.exception.ErrorMessage.DUPLICATE_ORDER_ITEM;
-import static store.exception.ErrorMessage.NOT_FOUND;
+import static store.exception.messages.ErrorMessage.DUPLICATE_ORDER_ITEM;
+import static store.exception.messages.ErrorMessage.NOT_FOUND;
 
 import java.time.LocalDate;
 import java.util.List;

@@ -1,7 +1,7 @@
 package store.order.domain;
 
-import static store.exception.ErrorMessage.DUPLICATE_ORDER_ITEM;
-import static store.exception.ErrorMessage.NOT_FOUND;
+import static store.exception.messages.ErrorMessage.DUPLICATE_ORDER_ITEM;
+import static store.exception.messages.ErrorMessage.NOT_FOUND;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -46,11 +46,6 @@ public class Cart {
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException(NOT_FOUND.getMessage()));
     }
-
-    public void applyPromotions() {
-        items.forEach(CartItem::applyPromotions);
-    }
-
     public List<CartItem> getItems() {
         return items;
     }

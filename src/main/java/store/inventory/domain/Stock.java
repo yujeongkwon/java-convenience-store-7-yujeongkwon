@@ -1,6 +1,6 @@
 package store.inventory.domain;
 
-import static store.exception.ErrorMessage.INSUFFICIENT_STOCK;
+import static store.exception.messages.ErrorMessage.INSUFFICIENT_STOCK;
 
 public class Stock {
 

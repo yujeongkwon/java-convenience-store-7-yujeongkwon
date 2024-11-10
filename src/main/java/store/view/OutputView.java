@@ -6,6 +6,7 @@ import store.inventory.dto.InventoryPairDto;
 
 public class OutputView {
 
+    private static final String NEW_LINE = "\n";
     private static final String NO_STOCK = "재고 없음";
     private static final String UNIT = "개";
     private static final String ITEM_FORMAT = "- %s %,d원 %s %s\n";
@@ -16,8 +17,9 @@ public class OutputView {
     }
 
     public static void displayInventory(List<InventoryPairDto> inventoryPairDtos) {
-        BUFFER.append("안녕하세요. W편의점입니다.\n현재 보유하고 있는 상품입니다.\n");
+        BUFFER.append("안녕하세요. W편의점입니다.\n현재 보유하고 있는 상품입니다.\n\n");
         inventoryPairDtos.forEach(OutputView::displayInventoryPair);
+        BUFFER.append(NEW_LINE);
         clearBuffer();
     }
 
@@ -26,14 +28,14 @@ public class OutputView {
         InventoryDto generalDto = inventoryPairDto.generalStockDto();
 
         if (promotionDto != null) {
-            appendFormattedItem(promotionDto, promotionDto.stock() + UNIT);
+            appendFormattedItem(promotionDto, formatStockInfo(promotionDto.stock()));
         }
 
-        appendFormattedItem(generalDto, formatStockInfo(generalDto.stock(), generalDto.promotionName() == null));
+        appendFormattedItem(generalDto, formatStockInfo(generalDto.stock()));
     }
 
-    private static String formatStockInfo(int stock, boolean isOutOfStock) {
-        if (isOutOfStock && stock <= 0) {
+    private static String formatStockInfo(int stock) {
+        if (stock <= 0) {
             return NO_STOCK;
         }
         return stock + UNIT;
