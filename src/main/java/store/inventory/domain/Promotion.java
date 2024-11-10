@@ -20,4 +20,18 @@ public class Promotion {
     public String getName() {
         return name;
     }
+
+    public boolean isApplicable(int quantity, LocalDate today) {
+        return isActive(today) && isEligibleForPromotion(quantity);
+    }
+
+    private boolean isActive(LocalDate today) {
+        return (today.isEqual(startDate) ||
+                today.isAfter(startDate)) && (today.isBefore(endDate) ||
+                today.isEqual(endDate));
+    }
+
+    private boolean isEligibleForPromotion(int quantity) {
+        return quantity >= buyQuantity;
+    }
 }
