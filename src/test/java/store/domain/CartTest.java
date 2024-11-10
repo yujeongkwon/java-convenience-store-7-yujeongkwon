@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static store.exception.ErrorMessage.DUPLICATE_ORDER_ITEM;
 import static store.exception.ErrorMessage.NOT_FOUND;
 
+import java.time.LocalDate;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -31,7 +32,7 @@ class CartTest {
         List<OrderItemDto> orderItems = List.of(new OrderItemDto("콜라", 2));
 
         // when
-        Cart cart = Cart.of(orderItems, inventoryItems);
+        Cart cart = Cart.of(orderItems, inventoryItems, LocalDate.now());
 
         // then
         assertThat(cart.getItems()).hasSize(1);
@@ -47,7 +48,7 @@ class CartTest {
         );
 
         // when, then
-        assertThatThrownBy(() -> Cart.of(orderItems, inventoryItems))
+        assertThatThrownBy(() -> Cart.of(orderItems, inventoryItems, LocalDate.now()))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage(DUPLICATE_ORDER_ITEM.getMessage());
     }
@@ -58,7 +59,7 @@ class CartTest {
         List<OrderItemDto> orderItems = List.of(new OrderItemDto("사이다", 2));
 
         // when, then
-        assertThatThrownBy(() -> Cart.of(orderItems, inventoryItems))
+        assertThatThrownBy(() -> Cart.of(orderItems, inventoryItems, LocalDate.now()))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage(NOT_FOUND.getMessage());
     }

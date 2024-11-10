@@ -3,10 +3,11 @@ package store.order.domain;
 import static store.exception.ErrorMessage.DUPLICATE_ORDER_ITEM;
 import static store.exception.ErrorMessage.NOT_FOUND;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
-import store.order.dto.OrderItemDto;
 import store.inventory.domain.InventoryItem;
+import store.order.dto.OrderItemDto;
 
 public class Cart {
 
@@ -16,19 +17,15 @@ public class Cart {
         this.items = items;
     }
 
-    public static Cart of(List<OrderItemDto> orderItems, List<InventoryItem> inventoryItems) {
+    public static Cart of(List<OrderItemDto> orderItems, List<InventoryItem> inventoryItems, LocalDate today) {
         validateDuplicate(orderItems);
         List<CartItem> cartItems = orderItems.stream()
                 .map(orderItemDto -> {
-                    InventoryItem inventoryItem = findInventoryItem(orderItemDto, inventoryItems);
-                    return CartItem.from(orderItemDto, inventoryItem);
+                    InventoryItem inventoryItem = findInventoryItem(orderItemDto.productName(), inventoryItems);
+                    return CartItem.from(orderItemDto, inventoryItem, today);
                 })
                 .collect(Collectors.toList());
         return new Cart(cartItems);
-    }
-
-    public List<CartItem> getItems() {
-        return items;
     }
 
     private static void validateDuplicate(List<OrderItemDto> orderItems) {
@@ -43,10 +40,18 @@ public class Cart {
         }
     }
 
-    private static InventoryItem findInventoryItem(OrderItemDto dto, List<InventoryItem> inventoryItems) {
+    private static InventoryItem findInventoryItem(String productName, List<InventoryItem> inventoryItems) {
         return inventoryItems.stream()
-                .filter(item -> item.getProductName().equals(dto.productName()))
+                .filter(item -> item.getProductName().equals(productName))
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException(NOT_FOUND.getMessage()));
+    }
+
+    public void applyPromotions() {
+        items.forEach(CartItem::applyPromotions);
+    }
+
+    public List<CartItem> getItems() {
+        return items;
     }
 }

@@ -3,11 +3,14 @@ package store.inventory.domain;
 import java.time.LocalDate;
 
 public class Promotion {
-    private String name;
-    private int buyQuantity;
-    private int freeQuantity;
-    private LocalDate startDate;
-    private LocalDate endDate;
+
+    private static final int ZERO = 0;
+
+    private final String name;
+    private final int buyQuantity;
+    private final int freeQuantity;
+    private final LocalDate startDate;
+    private final LocalDate endDate;
 
     public Promotion(String name, int buyQuantity, int freeQuantity, LocalDate startDate, LocalDate endDate) {
         this.name = name;
@@ -21,8 +24,28 @@ public class Promotion {
         return name;
     }
 
-    public int calculateFreeQuantity(int quantity) {
-        return (quantity / (buyQuantity + freeQuantity)) * freeQuantity;
+    public int calculateFreeQuantity(int quantity, int availableQuantity) {
+        int promotionStock = calculateAvailablePromotionStock(quantity, availableQuantity);
+        int promotionSetSize = getPromotionSetSize();
+        return promotionStock/promotionSetSize;
+    }
+    
+    public int calculateAvailablePromotionStock(int quantity, int availablePromoStock) {
+        int promotionSetSize = getPromotionSetSize();
+        int maxPromotionStock = (availablePromoStock / promotionSetSize) * promotionSetSize;
+        int needs = (quantity / promotionSetSize) * promotionSetSize;
+        return Math.min(maxPromotionStock, needs);
+    }
+
+    public int calculateRemainingFreeQuantity(int quantity) {
+        if ((quantity % getPromotionSetSize()) >= buyQuantity) {
+            return freeQuantity;
+        }
+        return ZERO;
+    }
+
+    public int getPromotionSetSize() {
+        return buyQuantity + freeQuantity;
     }
 
     public boolean isApplicable(int quantity, LocalDate today) {

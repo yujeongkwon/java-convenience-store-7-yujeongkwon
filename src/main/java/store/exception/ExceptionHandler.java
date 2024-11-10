@@ -3,6 +3,7 @@ package store.exception;
 import static store.exception.ErrorMessage.INVALID_FILE_FORMAT_ERROR;
 
 import java.io.IOException;
+import java.util.function.Supplier;
 import store.view.OutputView;
 
 public class ExceptionHandler {

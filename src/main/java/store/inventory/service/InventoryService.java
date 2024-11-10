@@ -1,5 +1,7 @@
 package store.inventory.service;
 
+import static store.exception.ErrorMessage.NOT_FOUND;
+
 import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -24,6 +26,13 @@ public class InventoryService {
     public void loadInventory(String filePath) throws IOException {
         List<InventoryDto> dtos = ProductParser.parseProducts(filePath);
         dtos.forEach(this::processInventoryDto);
+    }
+
+    public List<InventoryItem> findInventoryItems(List<String> productNames) {
+        return productNames.stream()
+                .map(name -> inventoryRepository.findByProductName(name)
+                        .orElseThrow(() -> new IllegalArgumentException(NOT_FOUND.getMessage())))
+                .collect(Collectors.toList());
     }
 
     public List<InventoryPairDto> getAllInventoryDtos() {

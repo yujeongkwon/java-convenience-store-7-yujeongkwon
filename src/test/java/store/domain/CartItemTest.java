@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static store.exception.ErrorMessage.INSUFFICIENT_STOCK;
 
+import java.time.LocalDate;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import store.order.dto.OrderItemDto;
@@ -29,7 +30,7 @@ class CartItemTest {
         OrderItemDto orderItemDto = new OrderItemDto("콜라", 2);
 
         // when
-        CartItem cartItem = CartItem.from(orderItemDto, inventoryItem);
+        CartItem cartItem = CartItem.from(orderItemDto, inventoryItem, LocalDate.now());
 
         // then
         assertThat(cartItem.getProductName()).isEqualTo("콜라");
@@ -41,7 +42,7 @@ class CartItemTest {
         OrderItemDto orderItemDto = new OrderItemDto("콜라", 15);
 
         // when, then
-        assertThatThrownBy(() -> CartItem.from(orderItemDto, inventoryItem))
+        assertThatThrownBy(() -> CartItem.from(orderItemDto, inventoryItem, LocalDate.now()))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage(INSUFFICIENT_STOCK.getMessage());
     }
