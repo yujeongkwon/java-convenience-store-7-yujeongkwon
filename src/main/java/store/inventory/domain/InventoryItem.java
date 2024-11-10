@@ -1,13 +1,18 @@
 package store.inventory.domain;
 
+import java.time.LocalDate;
+import java.util.Optional;
+
 public class InventoryItem {
 
     private final Product product;
     private final Stock stock;
+    private Optional<Promotion> promotion;
 
-    public InventoryItem(Product product, Stock stock) {
+    public InventoryItem(Product product, Stock stock, Promotion promotion) {
         this.product = product;
         this.stock = stock;
+        this.promotion = Optional.ofNullable(promotion);
     }
 
     public boolean hasSufficientStock(int quantity) {
@@ -15,15 +20,15 @@ public class InventoryItem {
     }
 
     public String getProductName() {
-        return product.getName();
+        return product.name();
     }
 
     public String getPromotionName() {
-        return product.getPromotionName();
+        return promotion.map(Promotion::getName).orElse("");
     }
 
     public int getPrice() {
-        return product.getPrice();
+        return product.price();
     }
 
     public int getGeneralStock() {
@@ -35,7 +40,7 @@ public class InventoryItem {
     }
 
     public void changePromotion(Promotion promotion) {
-        product.changePromotion(promotion);
+        this.promotion = Optional.ofNullable(promotion);
     }
 
     public void addGeneralStock(int quantity) {

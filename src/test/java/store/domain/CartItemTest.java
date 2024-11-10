@@ -6,10 +6,11 @@ import static store.exception.ErrorMessage.INSUFFICIENT_STOCK;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import store.dto.OrderItemDto;
+import store.order.dto.OrderItemDto;
 import store.inventory.domain.InventoryItem;
 import store.inventory.domain.Product;
 import store.inventory.domain.Stock;
+import store.order.domain.CartItem;
 
 class CartItemTest {
 
@@ -17,9 +18,9 @@ class CartItemTest {
 
     @BeforeEach
     void setUp() {
-        Product cola = new Product("콜라", 1000, null);
+        Product cola = new Product("콜라", 1000);
         Stock colaStock = new Stock(10, 0);
-        inventoryItem = new InventoryItem(cola, colaStock);
+        inventoryItem = new InventoryItem(cola, colaStock, null);
     }
 
     @Test

@@ -1,11 +1,11 @@
-package store.domain;
+package store.order.domain;
 
 import static store.exception.ErrorMessage.DUPLICATE_ORDER_ITEM;
 import static store.exception.ErrorMessage.NOT_FOUND;
 
 import java.util.List;
 import java.util.stream.Collectors;
-import store.dto.OrderItemDto;
+import store.order.dto.OrderItemDto;
 import store.inventory.domain.InventoryItem;
 
 public class Cart {

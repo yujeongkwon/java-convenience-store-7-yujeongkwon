@@ -2,7 +2,6 @@ package store.inventory.dto;
 
 import store.inventory.domain.InventoryItem;
 import store.inventory.domain.Product;
-import store.inventory.domain.Promotion;
 import store.inventory.domain.Stock;
 
 public record InventoryDto(String productName, int price, int stock, String promotionName) {
@@ -21,8 +20,8 @@ public record InventoryDto(String productName, int price, int stock, String prom
         return null;
     }
 
-    public Product toProduct(Promotion promotion) {
-        return new Product(productName, price, promotion);
+    public Product toProduct() {
+        return new Product(productName, price);
     }
 
     public Stock toStock() {

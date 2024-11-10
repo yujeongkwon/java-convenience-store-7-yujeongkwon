@@ -1,9 +1,9 @@
-package store.domain;
+package store.order.domain;
 
 import static store.exception.ErrorMessage.INSUFFICIENT_STOCK;
 
-import store.dto.OrderItemDto;
 import store.inventory.domain.InventoryItem;
+import store.order.dto.OrderItemDto;
 
 public class CartItem {
 
@@ -20,13 +20,13 @@ public class CartItem {
         return new CartItem(orderItemDto.productName(), orderItemDto.quantity());
     }
 
-    public String getProductName() {
-        return product;
-    }
-
     private static void validateStock(OrderItemDto orderItemDto, InventoryItem inventoryItem) {
         if (!inventoryItem.hasSufficientStock(orderItemDto.quantity())) {
             throw new IllegalArgumentException(INSUFFICIENT_STOCK.getMessage());
         }
+    }
+
+    public String getProductName() {
+        return product;
     }
 }

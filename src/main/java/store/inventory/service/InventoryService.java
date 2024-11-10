@@ -51,7 +51,7 @@ public class InventoryService {
 
     private void createAndSaveNewInventory(InventoryDto dto) {
         Promotion promotion = findPromotion(dto.promotionName());
-        InventoryItem newInventoryItem = new InventoryItem(dto.toProduct(promotion), dto.toStock());
+        InventoryItem newInventoryItem = new InventoryItem(dto.toProduct(), dto.toStock(), promotion);
         inventoryRepository.save(newInventoryItem);
     }
 

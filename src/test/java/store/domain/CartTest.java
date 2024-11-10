@@ -8,10 +8,11 @@ import static store.exception.ErrorMessage.NOT_FOUND;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import store.dto.OrderItemDto;
 import store.inventory.domain.InventoryItem;
 import store.inventory.domain.Product;
 import store.inventory.domain.Stock;
+import store.order.domain.Cart;
+import store.order.dto.OrderItemDto;
 
 class CartTest {
 
@@ -19,9 +20,9 @@ class CartTest {
 
     @BeforeEach
     void setUp() {
-        Product cola = new Product("콜라", 1000, null);
+        Product cola = new Product("콜라", 1000);
         Stock colaStock = new Stock(10, 0);
-        inventoryItems = List.of(new InventoryItem(cola, colaStock));
+        inventoryItems = List.of(new InventoryItem(cola, colaStock, null));
     }
 
     @Test
