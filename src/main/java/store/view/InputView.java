@@ -13,6 +13,10 @@ public class InputView {
         return askAboutPromotion("감사합니다. 구매하고 싶은 다른 상품이 있나요? (Y/N)");
     }
 
+    public static String readMembershipStatus() {
+        return askAboutPromotion("\n멤버십 할인을 받으시겠습니까? (Y/N)");
+    }
+
     public static String askAboutPromotion(String message) {
         System.out.println(message);
         return Console.readLine();

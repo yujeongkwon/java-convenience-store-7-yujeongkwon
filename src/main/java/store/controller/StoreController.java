@@ -15,7 +15,9 @@ import store.inventory.service.InventoryService;
 import store.inventory.service.PromotionService;
 import store.order.domain.Cart;
 import store.order.domain.CartItem;
+import store.order.domain.PaymentCalculator;
 import store.order.dto.OrderItemDto;
+import store.order.dto.ReceiptDto;
 import store.order.dto.YesOrNoDto;
 import store.view.InputView;
 import store.view.OutputView;
@@ -45,6 +47,8 @@ public class StoreController {
             displayInventory();
             Cart cart = createCartWithRetry();
             applyPromotions(cart);
+            PaymentCalculator calculator = askMembershipStatus(cart);
+            displayReceipt(calculator);
         } while(continueShoppingStatus());
     }
 
@@ -64,6 +68,13 @@ public class StoreController {
 
     private void applyPromotions(Cart cart) {
         cart.getItems().forEach(this::applyPromotionWithRetry);
+    }
+
+    private PaymentCalculator askMembershipStatus(Cart cart) {
+        boolean membershipStatus = exceptionHandler.handleWithRetry(() -> YesOrNoDto.from(InputView.readMembershipStatus()))
+                .result()
+                .isYesOrNo();
+        return cart.createPaymentCalculator(membershipStatus);
     }
 
     private boolean continueShoppingStatus() {
@@ -101,4 +112,10 @@ public class StoreController {
             cartItem.addEligibleFreeItems(exception.getQuantity());
         }
     }
+
+    private void displayReceipt(PaymentCalculator calculator) {
+        ReceiptDto receipt = calculator.generateReceipt();
+        OutputView.displayReceipt(receipt);
+    }
+
 }
