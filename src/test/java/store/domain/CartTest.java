@@ -52,20 +52,6 @@ class CartTest {
     }
 
     @Test
-    void 중복된_상품이_있으면_예외가_발생한다() {
-        // given
-        List<OrderItemDto> orderItems = List.of(
-                new OrderItemDto("콜라", 2),
-                new OrderItemDto("콜라", 3)
-        );
-
-        // when, then
-        assertThatThrownBy(() -> Cart.of(orderItems, inventoryItems, LocalDate.now()))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage(DUPLICATE_ORDER_ITEM.getMessage());
-    }
-
-    @Test
     void 존재하지_않는_상품이_있으면_예외가_발생한다() {
         // given
         List<OrderItemDto> orderItems = List.of(new OrderItemDto("탄산수", 2));
@@ -79,7 +65,7 @@ class CartTest {
     @Test
     void 구매한_상품목록을_생성한다() {
         // when
-        List<ReceiptItemDto> purchasedItems = cart.createPurchasedItems();
+        List<ReceiptItemDto> purchasedItems = cart.getPurchasedItems();
 
         // then
         assertThat(purchasedItems).hasSize(2);

@@ -1,7 +1,6 @@
 package store.order.domain;
 
-import static store.exception.messages.ErrorMessage.DUPLICATE_ORDER_ITEM;
-import static store.exception.messages.ErrorMessage.NOT_FOUND;
+import static store.order.validator.CartValidator.findInventoryItem;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -15,22 +14,22 @@ public class Cart {
 
     private final List<CartItem> items;
 
-    public Cart(List<CartItem> items) {
+    public Cart(final List<CartItem> items) {
         this.items = items;
     }
 
-    public static Cart of(List<OrderItemDto> orderItems, List<InventoryItem> inventoryItems, LocalDate today) {
-        validateDuplicate(orderItems);
-        List<CartItem> cartItems = orderItems.stream()
-                .map(orderItemDto -> {
-                    InventoryItem inventoryItem = findInventoryItem(orderItemDto.productName(), inventoryItems);
-                    return CartItem.from(orderItemDto, inventoryItem, today);
-                })
-                .collect(Collectors.toList());
+    public static Cart of(
+            final List<OrderItemDto> orderItems,
+            final List<InventoryItem> inventoryItems,
+            final LocalDate today) {
+        List<CartItem> cartItems = orderItems.stream().map(orderItemDto -> {
+            final InventoryItem inventoryItem = findInventoryItem(orderItemDto.productName(), inventoryItems);
+            return CartItem.from(orderItemDto, inventoryItem, today);
+        }).collect(Collectors.toList());
         return new Cart(cartItems);
     }
 
-    public PaymentCalculator createPaymentCalculator(boolean membershipStatus) {
+    public PaymentCalculator createPaymentCalculator(final boolean membershipStatus) {
         return new PaymentCalculator(this, membershipStatus);
     }
 
@@ -42,35 +41,12 @@ public class Cart {
         return items.stream().mapToInt(CartItem::calculatePromotionDiscount).sum();
     }
 
-    private static void validateDuplicate(List<OrderItemDto> orderItems) {
-        long distinctCount = orderItems
-                .stream()
-                .map(OrderItemDto::productName)
-                .distinct()
-                .count();
-
-        if (distinctCount != orderItems.size()) {
-            throw new IllegalArgumentException(DUPLICATE_ORDER_ITEM.getMessage());
-        }
-    }
-
-    private static InventoryItem findInventoryItem(String productName, List<InventoryItem> inventoryItems) {
-        return inventoryItems.stream()
-                .filter(item -> item.getProductName().equals(productName))
-                .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException(NOT_FOUND.getMessage()));
-    }
-
-    public List<ReceiptItemDto> createPurchasedItems() {
-        return items.stream()
-                .map(item -> new ReceiptItemDto(item.getProductName(), item.getTotalQuantity(), item.calculateTotalPrice()))
-                .toList();
+    public List<ReceiptItemDto> getPurchasedItems() {
+        return ReceiptItemDto.from(items);
     }
 
     public List<FreeItemDto> getFreeItems() {
-        return items.stream()
-                .map(CartItem::getFreeItems)
-                .collect(Collectors.toList());
+        return FreeItemDto.from(items);
     }
 
     public List<CartItem> getItems() {

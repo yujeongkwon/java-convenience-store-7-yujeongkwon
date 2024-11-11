@@ -14,51 +14,58 @@ public class CartItem {
     private int buyQuantity;
     private int freeQuantity;
 
-    public CartItem(String product, InventoryItem inventoryItem, int quantity, int freeQuantity) {
+    public CartItem(
+            final String product,
+            final InventoryItem inventoryItem,
+            final int quantity,
+            final int freeQuantity) {
         this.product = product;
         this.inventoryItem = inventoryItem;
         this.buyQuantity = quantity;
         this.freeQuantity = freeQuantity;
     }
 
-    public static CartItem from(OrderItemDto orderItemDto, InventoryItem inventoryItem, LocalDate today) {
+    public static CartItem from(
+            final OrderItemDto orderItemDto,
+            final InventoryItem inventoryItem,
+            final LocalDate today) {
         validateStock(orderItemDto, inventoryItem);
-        int freeQuantity = inventoryItem.calculateFreeQuantity(orderItemDto.quantity(), today);
-        int buyQuantity = orderItemDto.quantity() - freeQuantity;
+        final int freeQuantity = inventoryItem.calculateFreeQuantity(orderItemDto.quantity(), today);
+        final int buyQuantity = orderItemDto.quantity() - freeQuantity;
         return new CartItem(orderItemDto.productName(), inventoryItem, buyQuantity, freeQuantity);
     }
 
-    public void drainStock(LocalDate today) {
-        int totalQuantity = getTotalQuantity();
-        inventoryItem.drainStock(totalQuantity,today);
-    }
-
-    public void handlePromotionShortage(boolean userChoice, int nonPromotionQuantity) {
-        if (userChoice) {
-            inventoryItem.drainNonPromotionQuantity(nonPromotionQuantity);
-            return ;
-        }
-
-        buyQuantity -= nonPromotionQuantity;
-    }
-
-    public void addEligibleFreeItems(int additionalEligibleQuantity) {
-        inventoryItem.addEligibleQuantity(additionalEligibleQuantity);
-        freeQuantity += additionalEligibleQuantity;
-    }
-
-    private static void validateStock(OrderItemDto orderItemDto, InventoryItem inventoryItem) {
+    private static void validateStock(final OrderItemDto orderItemDto, final InventoryItem inventoryItem) {
         if (!inventoryItem.hasSufficientStock(orderItemDto.quantity())) {
             throw new IllegalArgumentException(INSUFFICIENT_STOCK.getMessage());
         }
     }
 
+    public void drainStock(final LocalDate today) {
+        final int totalQuantity = getTotalQuantity();
+        inventoryItem.drainStock(totalQuantity, today);
+    }
+
+    public void handlePromotionShortage(final boolean userChoice, final int nonPromotionQuantity) {
+        if (userChoice) {
+            inventoryItem.drainNonPromotionQuantity(nonPromotionQuantity);
+            return;
+        }
+
+        buyQuantity -= nonPromotionQuantity;
+    }
+
+    public void addEligibleFreeItems(final int additionalEligibleQuantity) {
+        inventoryItem.drainNonPromotionQuantity(additionalEligibleQuantity);
+        freeQuantity += additionalEligibleQuantity;
+    }
+
     public int calculateTotalPrice() {
-        return buyQuantity * inventoryItem.getPrice();
+        return inventoryItem.calculateTotalPriceForQuantity(buyQuantity);
     }
 
     public int calculatePromotionDiscount() {
-        return freeQuantity * inventoryItem.getPrice();
+        return inventoryItem.calculateTotalPriceForQuantity(freeQuantity);
     }
 
     public int getTotalQuantity() {

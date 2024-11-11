@@ -14,7 +14,8 @@ public class InputView {
     }
 
     public static String readMembershipStatus() {
-        return askAboutPromotion("\n멤버십 할인을 받으시겠습니까? (Y/N)");
+        System.out.println();
+        return askAboutPromotion("멤버십 할인을 받으시겠습니까? (Y/N)");
     }
 
     public static String askAboutPromotion(String message) {

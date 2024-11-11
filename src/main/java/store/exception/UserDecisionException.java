@@ -1,10 +1,11 @@
 package store.exception;
 
 public class UserDecisionException extends RuntimeException {
+
     private final boolean userChoice;
     private final int quantity;
 
-    public UserDecisionException(RuntimeException cause, boolean userChoice, int quantity) {
+    public UserDecisionException(final RuntimeException cause, final boolean userChoice, final int quantity) {
         super(cause);
         this.userChoice = userChoice;
         this.quantity = quantity;

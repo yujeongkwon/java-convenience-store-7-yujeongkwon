@@ -1,18 +1,11 @@
 package store.inventory.domain;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatCode;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static store.exception.messages.UserPromotionMessage.ADDITIONAL_BENEFIT_AVAILABLE;
-import static store.exception.messages.UserPromotionMessage.PROMOTION_NOT_AVAILABLE;
 
 import java.time.LocalDate;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
-import store.exception.AdditionalBenefitException;
-import store.exception.PromotionNotAvailableException;
 
 public class InventoryItemTest {
 
@@ -37,37 +30,5 @@ public class InventoryItemTest {
 
         // then
         assertThat(actualFreeQuantity).isEqualTo(expectedFreeQuantity);
-    }
-
-    @Test
-    void 프로모션_재고가_부족하면_예외가_발생한다() {
-        // given
-        int quantity = 10;
-
-        // when // then
-        assertThatThrownBy(() -> inventoryItem.applyPromotionDiscount(quantity)).isInstanceOf(
-                        PromotionNotAvailableException.class)
-                .hasMessageContaining(PROMOTION_NOT_AVAILABLE.format(PRODUCT_NAME, 7));
-    }
-
-    @Test
-    void 추가_혜택이_가능하면_예외가_발생한다() {
-        //given
-        int purchaseQuantity = 2;
-        int additionalEligibleQuantity = 1;
-
-        // when // then
-        assertThatThrownBy(() -> inventoryItem.checkForAdditionalBenefit(purchaseQuantity)).isInstanceOf(
-                        AdditionalBenefitException.class)
-                .hasMessageContaining(ADDITIONAL_BENEFIT_AVAILABLE.format("콜라", additionalEligibleQuantity));
-    }
-
-    @Test
-    void 추가_혜택이_가능하지만_재고가_부족하다면_예외를_발생하지_않는다() {
-        // given
-        int purchaseQuantity = 5;
-
-        // when // then
-        assertThatCode(() -> inventoryItem.checkForAdditionalBenefit(purchaseQuantity)).doesNotThrowAnyException();
     }
 }

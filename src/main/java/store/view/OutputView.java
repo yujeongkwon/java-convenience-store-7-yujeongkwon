@@ -23,7 +23,7 @@ public class OutputView {
 
     private static final StringBuilder BUFFER = new StringBuilder();
 
-    public static void displayErrorMessage(String message) {
+    public static void displayErrorMessage(final String message) {
         System.out.println(message);
     }
 
@@ -58,8 +58,8 @@ public class OutputView {
         appendFormattedItem(generalDto, formatStockInfo(generalDto.stock()));
     }
 
-    private static String formatStockInfo(int stock) {
-        if(stock <= 0) {
+    private static String formatStockInfo(final int stock) {
+        if (stock <= 0) {
             return NO_STOCK;
         }
         return stock + UNIT;
@@ -70,7 +70,7 @@ public class OutputView {
         BUFFER.append(String.format(ITEM_FORMAT, dto.productName(), dto.price(), stockInfo, promotionName));
     }
 
-    private static String getPromotionName(String promotionName) {
+    private static String getPromotionName(final String promotionName) {
         if (promotionName == null) {
             return "";
         }
@@ -79,21 +79,17 @@ public class OutputView {
 
     private static void appendPurchasedItems(List<ReceiptItemDto> purchasedItems) {
         BUFFER.append(PURCHASED_HEADER).append(NEW_LINE);
-        purchasedItems.forEach(item ->
-                BUFFER.append(formatPurchasedItem(item))
-        );
+        purchasedItems.forEach(item -> BUFFER.append(formatPurchasedItem(item)));
     }
 
     private static String formatPurchasedItem(ReceiptItemDto item) {
-        return String.format(PURCHASED_ITEM_FORMAT, item.productName(), item.quantity(), String.format("%,d원", item.price()));
+        return String.format(PURCHASED_ITEM_FORMAT, item.productName(), item.quantity(),
+                String.format("%,d원", item.price()));
     }
 
     private static void appendFreeItems(List<FreeItemDto> freeItems) {
-        BUFFER.append(FREE_HEADER).append(NEW_LINE)
-                .append(String.format(SUMMARY_FORMAT,"상품","수량"));
-        freeItems.forEach(item ->
-                BUFFER.append(formatFreeItem(item))
-        );
+        BUFFER.append(FREE_HEADER).append(NEW_LINE).append(String.format(SUMMARY_FORMAT, "상품", "수량"));
+        freeItems.forEach(item -> BUFFER.append(formatFreeItem(item)));
     }
 
     private static String formatFreeItem(FreeItemDto freeItem) {
@@ -105,11 +101,11 @@ public class OutputView {
                 .append(formatSummaryLine("총구매액", String.format("%,d원", receipt.totalAmount())))
                 .append(formatSummaryLine("행사할인", String.format("%,d원", -receipt.promotionDiscount())))
                 .append(formatSummaryLine("멤버십할인", String.format("%,d원", -receipt.membershipDiscount())))
-                .append(formatSummaryLine("내실돈", String.format("%,d원", receipt.finalAmount())))
-                .append(SUMMARY_HEADER).append(NEW_LINE).append(NEW_LINE);
+                .append(formatSummaryLine("내실돈", String.format("%,d원", receipt.finalAmount()))).append(SUMMARY_HEADER)
+                .append(NEW_LINE).append(NEW_LINE);
     }
 
-    private static String formatSummaryLine(String label, String amount) {
+    private static String formatSummaryLine(final String label, final String amount) {
         return String.format(SUMMARY_FORMAT, label, amount);
     }
 }

@@ -13,39 +13,41 @@ public class PaymentCalculator {
     private final Cart cart;
     private final Double membershipDiscountRate;
 
-    public PaymentCalculator(Cart cart, boolean membershipStatus) {
+    public PaymentCalculator(final Cart cart, final boolean membershipStatus) {
         this.cart = cart;
         this.membershipDiscountRate = initializeMembershipDiscountRate(membershipStatus);
     }
 
     public ReceiptDto generateReceipt() {
-        List<ReceiptItemDto> purchasedItems = cart.createPurchasedItems();
+        List<ReceiptItemDto> purchasedItems = cart.getPurchasedItems();
         List<FreeItemDto> freeItems = cart.getFreeItems();
         int totalAmount = cart.calculateTotalPrice();
         int promotionDiscount = cart.calculatePromotionDiscount();
         int membershipDiscount = calculateMembershipDiscount(totalAmount, promotionDiscount);
         int finalAmount = calculateFinalAmount(totalAmount, promotionDiscount, membershipDiscount);
 
-        return new ReceiptDto(purchasedItems, freeItems, totalAmount, promotionDiscount, membershipDiscount, finalAmount);
+        return new ReceiptDto(purchasedItems,
+                freeItems,
+                totalAmount,
+                promotionDiscount,
+                membershipDiscount,
+                finalAmount);
     }
 
-    private Double initializeMembershipDiscountRate(boolean membershipStatus) {
+    private Double initializeMembershipDiscountRate(final boolean membershipStatus) {
         if (membershipStatus) {
             return MEMBERSHIP_DISCOUNT_RATE;
         }
         return 0.0;
     }
 
-    private int calculateMembershipDiscount(int totalAmount, int promotionDiscount) {
-        int nonDiscountedAmount = totalAmount - promotionDiscount;
-        int maxMembershipDiscount = (int) (nonDiscountedAmount * membershipDiscountRate);
-        if (maxMembershipDiscount > MEMBERSHIP_DISCOUNT_LIMIT) {
-            return MEMBERSHIP_DISCOUNT_LIMIT;
-        }
-        return maxMembershipDiscount;
+    private int calculateMembershipDiscount(final int totalAmount, final int promotionDiscount) {
+        final int nonDiscountedAmount = totalAmount - promotionDiscount;
+        final int maxMembershipDiscount = (int) (nonDiscountedAmount * membershipDiscountRate);
+        return Math.min(maxMembershipDiscount, MEMBERSHIP_DISCOUNT_LIMIT);
     }
 
-    private int calculateFinalAmount(int totalAmount, int promotionDiscount, int membershipDiscount) {
+    private int calculateFinalAmount(final int totalAmount, final int promotionDiscount, final int membershipDiscount) {
         return totalAmount - promotionDiscount - membershipDiscount;
     }
 }

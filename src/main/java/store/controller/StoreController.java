@@ -1,24 +1,18 @@
 package store.controller;
 
 import camp.nextstep.edu.missionutils.DateTimes;
-import java.io.IOException;
 import java.nio.file.Paths;
 import java.time.LocalDate;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import java.util.function.Supplier;
 import store.exception.ExceptionHandler;
 import store.exception.ExceptionResponse;
 import store.exception.UserDecisionException;
-import store.inventory.dto.InventoryPairDto;
-import store.inventory.service.InventoryService;
-import store.inventory.service.PromotionService;
 import store.order.domain.Cart;
 import store.order.domain.CartItem;
 import store.order.domain.PaymentCalculator;
-import store.order.dto.OrderItemDto;
 import store.order.dto.ReceiptDto;
 import store.order.dto.YesOrNoDto;
+import store.service.StoreService;
 import store.view.InputView;
 import store.view.OutputView;
 
@@ -27,95 +21,81 @@ public class StoreController {
     private static final String PROMOTION_FILE_PATH = Paths.get("src", "main", "resources", "promotions.md").toString();
     private static final String PRODUCT_FILE_PATH = Paths.get("src", "main", "resources", "products.md").toString();
 
-    private final InventoryService inventoryService;
-    private final PromotionService promotionService;
+    private final StoreService storeService;
     private final ExceptionHandler exceptionHandler;
 
-    public StoreController(InventoryService inventoryService, PromotionService promotionService,
-            ExceptionHandler exceptionHandler) {
-        this.inventoryService = inventoryService;
-        this.promotionService = promotionService;
+    public StoreController(StoreService storeService, ExceptionHandler exceptionHandler) {
+        this.storeService = storeService;
         this.exceptionHandler = exceptionHandler;
     }
 
     public void init() {
-        exceptionHandler.handleVoidWithIOException(this::loadInitialData);
+        exceptionHandler.handleVoidWithIOException(
+                () -> storeService.loadInitialData(PROMOTION_FILE_PATH, PRODUCT_FILE_PATH));
     }
 
     public void run() {
         do {
             displayInventory();
-            Cart cart = createCartWithRetry();
-            applyPromotions(cart);
-            PaymentCalculator calculator = askMembershipStatus(cart);
-            displayReceipt(calculator);
-        } while(continueShoppingStatus());
-    }
-
-    private void loadInitialData() throws IOException {
-        promotionService.loadPromotions(PROMOTION_FILE_PATH);
-        inventoryService.loadInventory(PRODUCT_FILE_PATH);
-    }
-
-    private void displayInventory() {
-        List<InventoryPairDto> inventoryPairDtos = inventoryService.getAllInventoryDtos();
-        OutputView.displayInventory(inventoryPairDtos);
+            final Cart cart = createCartWithRetry();
+            processCart(cart);
+        } while (continueShopping());
     }
 
     private Cart createCartWithRetry() {
-        return exceptionHandler.handleWithRetry(this::createCart).result();
+        return exceptionHandler.handleWithRetry(() -> storeService.prepareCart(InputView.readOrder())).result();
     }
 
-    private void applyPromotions(Cart cart) {
-        cart.getItems().forEach(this::applyPromotionWithRetry);
+    private void displayInventory() {
+        OutputView.displayInventory(storeService.getAllInventoryPairs());
     }
 
-    private PaymentCalculator askMembershipStatus(Cart cart) {
-        boolean membershipStatus = exceptionHandler.handleWithRetry(() -> YesOrNoDto.from(InputView.readMembershipStatus()))
-                .result()
-                .isYesOrNo();
+    private void processCart(final Cart cart) {
+        applyPromotions(cart);
+        final PaymentCalculator calculator = requestMembershipStatus(cart);
+        displayReceipt(calculator);
+    }
+
+    private boolean continueShopping() {
+        return handleYesOrNoRetry(InputView::readRetryStatus);
+    }
+
+    private PaymentCalculator requestMembershipStatus(final Cart cart) {
+        final boolean membershipStatus = handleYesOrNoRetry(InputView::readMembershipStatus);
         return cart.createPaymentCalculator(membershipStatus);
     }
 
-    private boolean continueShoppingStatus() {
-        return exceptionHandler.handleWithRetry(() -> YesOrNoDto.from(InputView.readRetryStatus()))
-                .result()
-                .isYesOrNo();
+    private boolean handleYesOrNoRetry(final Supplier<String> inputSupplier) {
+        return exceptionHandler.handleWithRetry(() -> YesOrNoDto.from(inputSupplier.get())).result().isYesOrNo();
     }
 
-    private Cart createCart() {
-        List<OrderItemDto> orderItems = parseOrderItems(InputView.readOrder());
-        List<String> names = orderItems.stream().map(OrderItemDto::productName).toList();
-        return Cart.of(orderItems, inventoryService.findInventoryItems(names), LocalDate.from(DateTimes.now()));
+    private void applyPromotions(final Cart cart) {
+        cart.getItems().forEach(this::applyPromotionWithRetry);
     }
 
-    private List<OrderItemDto> parseOrderItems(String input) {
-        return Stream.of(input.split(",")).map(OrderItemDto::from).collect(Collectors.toList());
+    private void displayReceipt(final PaymentCalculator calculator) {
+        final ReceiptDto receipt = calculator.generateReceipt();
+        OutputView.displayReceipt(receipt);
     }
-    
-    private void applyPromotionWithRetry(CartItem cartItem) {
+
+    private void applyPromotionWithRetry(final CartItem cartItem) {
         ExceptionResponse<Void> response = exceptionHandler.handleWithRetry(() -> {
             cartItem.drainStock(LocalDate.from(DateTimes.now()));
             return null;
         });
         if (response.hasException()) {
-            handleUserDecision(response.userDecisionException(), cartItem);
+            processUserDecision(response.userDecisionException(), cartItem);
         }
     }
 
-    private void handleUserDecision(UserDecisionException exception, CartItem cartItem) {
+    private void processUserDecision(final UserDecisionException exception, final CartItem cartItem) {
         if (exception.isPromotionNotAvailableException()) {
             cartItem.handlePromotionShortage(exception.getUserChoice(), exception.getQuantity());
+            return;
         }
 
         if (exception.isAdditionalBenefitException() && exception.getUserChoice()) {
             cartItem.addEligibleFreeItems(exception.getQuantity());
         }
     }
-
-    private void displayReceipt(PaymentCalculator calculator) {
-        ReceiptDto receipt = calculator.generateReceipt();
-        OutputView.displayReceipt(receipt);
-    }
-
 }

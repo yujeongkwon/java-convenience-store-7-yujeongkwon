@@ -29,10 +29,8 @@ public class InventoryService {
     }
 
     public List<InventoryItem> findInventoryItems(List<String> productNames) {
-        return productNames.stream()
-                .map(name -> inventoryRepository.findByProductName(name)
-                        .orElseThrow(() -> new IllegalArgumentException(NOT_FOUND.getMessage())))
-                .collect(Collectors.toList());
+        return productNames.stream().map(name -> inventoryRepository.findByProductName(name)
+                .orElseThrow(() -> new IllegalArgumentException(NOT_FOUND.getMessage()))).collect(Collectors.toList());
     }
 
     public List<InventoryPairDto> getAllInventoryDtos() {

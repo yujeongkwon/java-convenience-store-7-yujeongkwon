@@ -12,7 +12,8 @@ public class Promotion {
     private final LocalDate startDate;
     private final LocalDate endDate;
 
-    public Promotion(String name, int buyQuantity, int freeQuantity, LocalDate startDate, LocalDate endDate) {
+    public Promotion(final String name, final int buyQuantity, final int freeQuantity, final LocalDate startDate,
+            final LocalDate endDate) {
         this.name = name;
         this.buyQuantity = buyQuantity;
         this.freeQuantity = freeQuantity;
@@ -20,24 +21,20 @@ public class Promotion {
         this.endDate = endDate;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public int calculateFreeQuantity(int quantity, int availableQuantity) {
+    public int calculateFreeQuantity(final int quantity, final int availableQuantity) {
         int promotionStock = calculateAvailablePromotionStock(quantity, availableQuantity);
         int promotionSetSize = getPromotionSetSize();
-        return promotionStock/promotionSetSize;
+        return promotionStock / promotionSetSize;
     }
-    
-    public int calculateAvailablePromotionStock(int quantity, int availablePromoStock) {
+
+    public int calculateAvailablePromotionStock(final int quantity, final int availablePromoStock) {
         int promotionSetSize = getPromotionSetSize();
         int maxPromotionStock = (availablePromoStock / promotionSetSize) * promotionSetSize;
         int needs = (quantity / promotionSetSize) * promotionSetSize;
         return Math.min(maxPromotionStock, needs);
     }
 
-    public int calculateRemainingFreeQuantity(int quantity) {
+    public int calculateRemainingFreeQuantity(final int quantity) {
         if ((quantity % getPromotionSetSize()) >= buyQuantity) {
             return freeQuantity;
         }
@@ -48,17 +45,21 @@ public class Promotion {
         return buyQuantity + freeQuantity;
     }
 
-    public boolean isApplicable(int quantity, LocalDate today) {
+    public String getName() {
+        return name;
+    }
+
+    public boolean isApplicable(final int quantity, final LocalDate today) {
         return isActive(today) && isEligibleForPromotion(quantity);
     }
 
-    private boolean isActive(LocalDate today) {
+    private boolean isActive(final LocalDate today) {
         return (today.isEqual(startDate) ||
                 today.isAfter(startDate)) && (today.isBefore(endDate) ||
                 today.isEqual(endDate));
     }
 
-    private boolean isEligibleForPromotion(int quantity) {
+    private boolean isEligibleForPromotion(final int quantity) {
         return quantity >= buyQuantity;
     }
 }

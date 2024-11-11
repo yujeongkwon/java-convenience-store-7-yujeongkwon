@@ -6,16 +6,16 @@ import store.inventory.domain.Stock;
 
 public record InventoryDto(String productName, int price, int stock, String promotionName) {
 
-    public static InventoryDto createGeneralStockDto(InventoryItem inventoryItem) {
+    public static InventoryDto createGeneralStockDto(final InventoryItem inventoryItem) {
         int stock = inventoryItem.getGeneralStock();
         return new InventoryDto(inventoryItem.getProductName(), inventoryItem.getPrice(), stock, null);
     }
 
-    public static InventoryDto createPromotionStockDto(InventoryItem inventoryItem) {
+    public static InventoryDto createPromotionStockDto(final InventoryItem inventoryItem) {
         String promotionName = inventoryItem.getPromotionName();
         if (promotionName != null && !promotionName.isBlank()) {
-            return new InventoryDto(inventoryItem.getProductName(), inventoryItem.getPrice(), inventoryItem.getPromotionStock(),
-                    promotionName);
+            return new InventoryDto(inventoryItem.getProductName(), inventoryItem.getPrice(),
+                    inventoryItem.getPromotionStock(), promotionName);
         }
         return null;
     }
